@@ -1,12 +1,14 @@
-from src.routers.user import user_router
-from src.middlewares.errror_handler import ErrorHandler
 from fastapi import FastAPI
 from src.config.database import Base, engine
+from src.middlewares.errror_handler import ErrorHandler
 from src.routers.auth import auth_router
+from src.routers.user import user_router
+from src.routers.city import city_router
+from src.routers.comment import comment_router
 
 tags_metadata = [
     {
-        "name": "usuarios",
+        "name": "users",
         "description": "Users handling endpoints",  
     },
     {
@@ -14,16 +16,16 @@ tags_metadata = [
         "description": "User's authentication",
     },
     {
-        "name": "i",
-        "description": "User's incomes",
+        "name": "city",
+        "description": "User's city",
     },
     {
-        "name": "expenses",
-        "description": "User's expenses",
+        "name": "comments",
+        "description": "User's comments",
     },
     {
-        "name": "reports",
-        "description": "User's reports of incomes and expenses",
+        "name": "quialification",
+        "description": "User's qualification",
     },
 ]
 
@@ -45,5 +47,7 @@ app.add_middleware(ErrorHandler)
 
 app.include_router(prefix="", router=auth_router)
 app.include_router(prefix="/users", router=user_router)
+app.include_router(prefix="/cities", router=city_router)
+app.include_router(prefix="/comments", router=comment_router)
 
  
