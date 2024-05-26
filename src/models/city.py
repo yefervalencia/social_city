@@ -1,3 +1,10 @@
-from fastapi import APIRouter, Body, Query, Path, status, Depends
-from fastapi.responses import JSONResponse
-from typing import List, Annotated
+from sqlalchemy import Column, Integer, String
+from src.config.database import Base
+
+class City(Base):
+    __tablename__ = "cities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, index=True)
+    pais = Column(String, index=True)
+    codigo_postal = Column(String, index=True)
