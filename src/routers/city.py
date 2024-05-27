@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Body, Query, Path, status, Depends
 from fastapi.responses import JSONResponse
 from typing import List
-from src.schemas.ciudad import City
+from src.schemas.city import City
 from src.config.database import SessionLocal
 from fastapi.encoders import jsonable_encoder
-from src.repositories.ciudad import CityRepository
+from src.repositories.city import CityRepository
 
 city_router = APIRouter()
 

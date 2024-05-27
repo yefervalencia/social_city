@@ -11,10 +11,15 @@ class Config:
     from_attributes = True
     json_schema_extra = {
         "example": {
+            "name": "Pepe ",
+            "lastname": "Pimentón",
             "email": "pepe@example.com",
-            "name": "Pepe Pimentón",
             "password": "xxx",
-            "is_active": True
+            "is_active": True,
+            "born_date" : "",
+            "created_at" : "",
+            "cellphone" : "",
+            "city_id": 1
             }
     }
     
