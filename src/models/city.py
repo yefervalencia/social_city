@@ -1,10 +1,15 @@
 from sqlalchemy import Column, Integer, String
 from src.config.database import Base
+from sqlalchemy.orm import relationship
+
 
 class City(Base):
     __tablename__ = "cities"
 
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, index=True)
-    pais = Column(String, index=True)
-    codigo_postal = Column(String, index=True)
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    name = Column(String, index=True, unique=True, nullable=False)
+    country = Column(String, nullable=False)
+    zip = Column(Integer, index=True, nullable=False)
+    
+    users = relationship("User", back_populates="city")
+    sceneries = relationship("Scenery", back_papulates="city")
