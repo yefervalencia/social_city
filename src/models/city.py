@@ -9,7 +9,7 @@ class City(Base):
     id = Column(Integer, primary_key=True,autoincrement=True)
     name = Column(String, index=True, unique=True, nullable=False)
     country = Column(String, nullable=False)
-    zip = Column(Integer, index=True, nullable=False)
+    zip = Column(Integer(lenght= 5), index=True, nullable=False)
     
     users = relationship("User", back_populates="city")
     sceneries = relationship("Scenery", back_papulates="city")
