@@ -1,22 +1,21 @@
-from fastapi import APIRouter, Body, Query, Path, status, Depends
-from fastapi.responses import JSONResponse
-from typing import List, Annotated
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,validator, EmailStr
 from typing import Optional
 
 class Comment(BaseModel):
     id: Optional[int] = Field(default=None, title="ID of the comment")
-    content: str = Field(min_length=1, max_length=500, title="Content of the comment")
-    user_id: int = Field(..., title="ID of the user who made the comment")
-    city_id: int = Field(..., title="ID of the city the comment is related to")
+    title: str = Field(..., min_length=1, max_length=100, title="Title of the comment")
+    content: str = Field(...,min_length=1, max_length=5000, title="Content of the comment")
+    user_id: int = Field(...,ge=1, title="ID of the user who made the comment")
+    parche_id: int = Field(...,ge=1, title="ID of the parche the comment is related to")
 
     class Config:
         from_attributes = True
         json_schema_extra = {
             "example": {
-                "id": 1,
+                "title": "Example comment",
                 "content": "This is a comment.",
                 "user_id": 1,
-                "city_id": 1
+                "parche_id": 1
             }
         }
+ 
