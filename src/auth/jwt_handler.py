@@ -1,6 +1,6 @@
 import bcrypt
 import jwt
-from fastapi import HTTPException
+from fastapi import HTTPException,status
 from datetime import (
  datetime,
  timezone,
@@ -12,6 +12,7 @@ class JWTHandler:
     def __init__(self, secret, algorithm) -> None:
         self.secret = secret
         self.algorithm = algorithm
+        
 
     def hash_password(self, password: str) -> str:
         return bcrypt.hashpw(password=password.encode("utf-8"),
@@ -28,7 +29,7 @@ class JWTHandler:
     def encode_token(self, user):
         payload = {
         # exp (expiration time): Time after which the JWT expires
-        "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1),
+        "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=30),
         # iat (issued at time): Time at which the JWT was issued
         "iat": datetime.now(tz=timezone.utc),
         # sub (subject): Subject of the JWT (the user)
@@ -37,6 +38,7 @@ class JWTHandler:
         "scope": "access_token",
         "user.name": user.name,
         "user.id": user.id,
+        "user.role": user.role,
         }
         return jwt.encode(payload, self.secret, algorithm=self.algorithm)
 
@@ -55,6 +57,24 @@ class JWTHandler:
             raise HTTPException(status_code=401, detail="Token expired")
         except jwt.InvalidTokenError:
             raise HTTPException(status_code=401, detail="Invalid token")
+        
+    def user_verification(self, token):
+        credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(token,
+            self.secret,
+            algorithms=[self.algorithm])
+            role: str = payload.get("user.role")
+            if role is None:
+                raise credentials_exception
+            if role != "admin":
+                raise HTTPException(status_code=401, detail="access denied")
+        except jwt.InvalidSignatureError:
+            raise credentials_exception
         
     def encode_refresh_token(self, user):
         payload = {

@@ -7,6 +7,7 @@ class User (BaseModel):
     lastname: str = Field(...,title="Lastname of the user")
     email: EmailStr = Field(min_length=6, max_length=64, title="Email of the user")
     password: str = Field(max_length=64, title="Password of the user")
+    rol: str = Field(default="user",title="Role of the user")
     is_active: bool = Field(default=True, title="Status of the user")
     born_date: datetime = Field(..., title="Born date of the user")
     cellphone: str = Field(...,min_lenght=10, max_lenght=10, title="Cellphone of the user")
@@ -19,6 +20,7 @@ class User (BaseModel):
                 "lastname": "Pimentón",
                 "email": "pepe@example.com",
                 "password": "xxx",
+                "rol":"user",
                 "is_active": True,
                 "born_date" : "2023-1-6T12:00:00",
                 "cellphone" : "0000000000",
@@ -43,6 +45,12 @@ class User (BaseModel):
     def validate_dates(cls, value):  
         if value.get('born_date') <= (datetime.now() - timedelta(days=14*365.25)):
             raise ValueError("User must be at least 14 years old")
+        return value
+    
+    @model_validator(model="user")
+    def validate_rol(cls, value):
+        if value.get('rol') not in ["user","admin"]:
+            raise ValueError("Invalid role")
         return value
     
 class UserLogin (BaseModel):
