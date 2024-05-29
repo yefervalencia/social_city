@@ -7,7 +7,8 @@ Fabian Hernandez Castaño
 Desarrollo de un proyecto de backend completo elaborado en fastapi como framework y python como lenguaje oficial del proyecto
 consiste en una api que almacenara informacion sobre los lugares,reuniones o llamados urbanamente como parches donde se manejaran ususarios, parches, categorias, comentarios calificacion desarrollarlo de forma escalable para que aplique en varias ciudades.
 
-Diagrama de Clases para la programacion del proyecto:
+Diagrama de Clases para la estructura del API:
+![Diagrama sin título drawio](https://github.com/yefervalencia/social_city/assets/123003082/df5b3edf-d7ea-40c4-b4e4-52ca9654a0a0)
 
 
 ## Requisitos
@@ -54,4 +55,4 @@ uvicorn main:app --reload
 La aplicación estará disponible en http://127.0.0.1:8000.
 
 
-
+Este archivo README incluye una descripción general del proyecto, los requisitos, las instrucciones de instalación y ejecución, una descripción detallada de cada endpoint disponible en la API, la estructura del proyecto y la información sobre la licencia del proyecto. Puedes ajustarlo según las necesidades específicas de tu proyecto.
