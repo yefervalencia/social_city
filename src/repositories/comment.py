@@ -1,44 +1,46 @@
-from fastapi import APIRouter, Body, Query, Path, status, Depends
-from fastapi.responses import JSONResponse
-from typing import List, Annotated
-from sqlalchemy.orm import Session
+from typing import List
 from src.models.comment import Comment as CommentModel
 from src.schemas.comment import Comment as CommentSchema
 
-class CommentRepository:
-    def __init__(self, db: Session):
+class CommentRepository():
+    def __init__(self, db) -> None:
         self.db = db
+        
+    def get_all_comments(self,
+        offset: int, 
+        limit: int
+        ) -> List[CommentSchema]:
+        
+        query = self.db.query(CommentModel)
+        if(offset is not None):
+            query = query.offset(offset)
+        if(limit is not None):
+            query = query.limit(limit)
+        return query.all()
 
-def get_all_comments(self, offset: int = 0, limit: int = 10):
-        return self.db.query(CommentModel).offset(offset).limit(limit).all()
+    def get_comment(self, id: int) -> CommentSchema:
+        element = self.db.query(CommentModel).filter(CommentModel.id == id).first()
+        return element
 
-def get_comment(self, comment_id: int):
-        return self.db.query(CommentModel).filter(CommentModel.id == comment_id).first()
-
-def create_comment(self, comment: CommentSchema):
-        db_comment = CommentModel(
-            content=comment.content,
-            user_id=comment.user_id,
-            city_id=comment.city_id
-        )
-        self.db.add(db_comment)
+    def create_comment(self, comment: CommentSchema) -> dict:
+        new_comment = CommentModel(**comment.model_dump())
+        self.db.add(new_comment)
         self.db.commit()
-        self.db.refresh(db_comment)
-        return db_comment
-
-def update_comment(self, comment_id: int, comment: CommentSchema):
-        db_comment = self.get_comment(comment_id)
-        if db_comment:
-            db_comment.content = comment.content
-            db_comment.user_id = comment.user_id
-            db_comment.city_id = comment.city_id
-            self.db.commit()
-            self.db.refresh(db_comment)
-        return db_comment
-
-def delete_comment(self, comment_id: int):
-        db_comment = self.get_comment(comment_id)
-        if db_comment:
-            self.db.delete(db_comment)
-            self.db.commit()
-        return db_comment
+        self.db.refresh(new_comment)
+        return new_comment
+    
+    def update_comment(self, id: int, comment: CommentSchema) -> dict:
+        element = self.db.query(CommentModel).filter(CommentModel.id == id).first()
+        element.title = comment.title
+        element.content = comment.content
+        element.user_id = comment.user_id
+        element.parche_id = comment.parche_id
+        self.db.commit()
+        self.db.refresh(element)
+        return element
+    
+    def delete_comment(self, id: int) -> dict:
+        element = self.db.query(CommentModel).filter(CommentModel.id == id).first()
+        self.db.delete(element)
+        self.db.commit()
+        return element

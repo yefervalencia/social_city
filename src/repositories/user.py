@@ -1,7 +1,6 @@
 from typing import List
 from src.models.user import User as UserModel
 from src.schemas.user import User as UserSchema
-from src.schemas.user import UserCreate as UserCreateSchema
 
 class UserRepository():
     def __init__(self, db) -> None:
@@ -21,10 +20,6 @@ class UserRepository():
 
     def get_user(self, id: int) -> UserSchema:
         element = self.db.query(UserModel).filter(UserModel.id == id).first()
-        return element
-    
-    def get_user(self, email: str) -> UserSchema:
-        element = self.db.query(UserModel).filter(UserModel.email == email).first()
         return element
 
     def create_user(self, user: UserSchema) -> dict:

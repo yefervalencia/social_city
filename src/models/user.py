@@ -14,6 +14,7 @@ class User(Base):
   created_at = Column(DateTime, default=datetime.datetime.now)
   updated_at = Column()
   cellphone = Column(String (length=10), nullable=False)
+  rol = Column(String, default="user")
   is_active = Column(Boolean, default=True)
   city_id = Column(Integer, ForeignKey('cities.id'), nullable=False)
   
