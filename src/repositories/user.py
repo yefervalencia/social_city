@@ -1,4 +1,7 @@
+import jwt
 from typing import List
+from fastapi import Depends,status,HTTPException
+from fastapi.security import HTTPAuthorizationCredentials,HTTPBearer
 from src.models.user import User as UserModel
 from src.schemas.user import User as UserSchema
 
@@ -17,10 +20,28 @@ class UserRepository():
         if(limit is not None):
             query = query.limit(limit)
         return query.all()
+    
+    def get_users_city(self,
+        offset: int, 
+        limit: int,
+        idCity
+        ) -> List[UserModel]:
+        
+        query = self.db.query(UserModel).filter(UserModel.city_id == idCity)
+        if(offset is not None):
+            query = query.offset(offset)
+        if(limit is not None):
+            query = query.limit(limit)
+        return query.all()
 
-    def get_user(self, id: int) -> UserSchema:
+    def get_user(self, email: str) -> UserSchema:
+        element = self.db.query(UserModel).filter(UserModel.email == email).first()
+        return element
+
+    def get_user_id(self, id: int) -> UserSchema:
         element = self.db.query(UserModel).filter(UserModel.id == id).first()
         return element
+    
 
     def create_user(self, user: UserSchema) -> dict:
         new_user = UserModel(**user.model_dump())
@@ -31,10 +52,16 @@ class UserRepository():
     
     def update_user(self, id: int, user: UserSchema) -> dict:
         element = self.db.query(UserModel).filter(UserModel.id == id).first()
-        element.name = user.name
-        element.email = user.email
-        element.password = user.password
-        element.is_active = user.is_active
+        #hashed_password = auth_handler.hash_password(password=user.password)
+        element.name=user.name,
+        element.lastname=user.lastname,
+        element.email=user.email,
+        #element.password=hashed_password,
+        element.rol=user.rol,
+        element.is_active=user.is_active,
+        element.born_date=user.born_date,
+        element.cellphone=user.cellphone,
+        element.city_id=user.city_id
         self.db.commit()
         self.db.refresh(element)
         return element

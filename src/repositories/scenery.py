@@ -17,6 +17,19 @@ class SceneryRepository():
         if(limit is not None):
             query = query.limit(limit)
         return query.all()
+    
+    def get_sceneries_city(self,
+        offset: int, 
+        limit: int,
+        idCity
+        ) -> List[SceneryModel]:
+        
+        query = self.db.query(SceneryModel).filter(SceneryModel.city_id == idCity)
+        if(offset is not None):
+            query = query.offset(offset)
+        if(limit is not None):
+            query = query.limit(limit)
+        return query.all()
 
     def get_scenery(self, id: int) -> ScenerySchema:
         element = self.db.query(SceneryModel).filter(SceneryModel.id == id).first()

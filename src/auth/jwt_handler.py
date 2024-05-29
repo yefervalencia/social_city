@@ -1,28 +1,49 @@
 import bcrypt
 import jwt
-from fastapi import HTTPException,status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import HTTPException,status,Depends
 from datetime import (
  datetime,
  timezone,
  timedelta,
 )
-from repositories.user import UserRepository
-
+from src.repositories.user import UserRepository
 class JWTHandler:
-    def __init__(self, secret, algorithm) -> None:
+    def __init__(self, secret, algorithm)  -> None:
         self.secret = secret
         self.algorithm = algorithm
         
+    def verify_admin(self,credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+        token = credentials.credentials
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+        try:
+            payload = jwt.decode(token, self.secret, algorithms=[self.algorithm])
+            rol: str = payload.get("user.rol")
+            if rol is None:
+                raise credentials_exception
+            if rol != "admin":
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        except jwt.InvalidSignatureError:
+            raise credentials_exception
+        return token
+            
 
     def hash_password(self, password: str) -> str:
         return bcrypt.hashpw(password=password.encode("utf-8"),
-        salt=bcrypt.gensalt())
+            salt=bcrypt.gensalt())
 
     def verify_password(self,
         password: str,
         hashed_password: str) -> bool:
+        print(password)
+        print(hashed_password.encode("utf-8"))
         return bcrypt.checkpw(
-        password=password.encode("utf-8"),
+        password=password.encode("utf-8") ,
         hashed_password=hashed_password.encode("utf-8"),
         )
 
@@ -38,7 +59,7 @@ class JWTHandler:
         "scope": "access_token",
         "user.name": user.name,
         "user.id": user.id,
-        "user.role": user.role,
+        "user.rol": user.rol,
         }
         return jwt.encode(payload, self.secret, algorithm=self.algorithm)
 
@@ -58,27 +79,9 @@ class JWTHandler:
         except jwt.InvalidTokenError:
             raise HTTPException(status_code=401, detail="Invalid token")
         
-    def user_verification(self, token):
-        credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-        )
-        try:
-            payload = jwt.decode(token,
-            self.secret,
-            algorithms=[self.algorithm])
-            role: str = payload.get("user.role")
-            if role is None:
-                raise credentials_exception
-            if role != "admin":
-                raise HTTPException(status_code=401, detail="access denied")
-        except jwt.InvalidSignatureError:
-            raise credentials_exception
-        
     def encode_refresh_token(self, user):
         payload = {
-        "exp": datetime.now(tz=timezone.utc) + timedelta(hours=10),
+        "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=30),
         "iat": datetime.now(tz=timezone.utc),
         "scope": "refresh_token",
         "sub": user.email,

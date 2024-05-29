@@ -6,8 +6,8 @@ class User (BaseModel):
     name: str = Field(min_length=4, max_length=60, title="Name of the user")
     lastname: str = Field(...,title="Lastname of the user")
     email: EmailStr = Field(min_length=6, max_length=64, title="Email of the user")
-    password: str = Field(max_length=64, title="Password of the user")
-    rol: str = Field(default="user",title="Role of the user")
+    password: str = Field(title="Password of the user")
+    rol: str = Field(default="user",title="Rol of the user")
     is_active: bool = Field(default=True, title="Status of the user")
     born_date: datetime = Field(..., title="Born date of the user")
     cellphone: str = Field(...,min_lenght=10, max_lenght=10, title="Cellphone of the user")
@@ -28,30 +28,30 @@ class User (BaseModel):
                 }
         }
     
-    @model_validator(model="User")
-    def validate_password(cls, value):
-        if value.isnumeric():
+    @model_validator(mode='after')
+    def validate_password(self):
+        if self.password.isnumeric():
             raise ValueError("Password must contain letters")
-        elif value.isalpha():
+        elif self.password.isalpha():
             raise ValueError("Password must contain numbers")
-        elif value.isalnum():
+        elif self.password.isalnum():
             raise ValueError("Password must contain special characters")
-        elif value in(value.get('name')):
+        elif (self.name.lower()) in self.password or (self.lastname.lower()) in self.password:
             raise ValueError("Password must not contain name")
         else:
-            return value
+            return self
         
-    @model_validator(model="User")
-    def validate_dates(cls, value):  
-        if value.get('born_date') <= (datetime.now() - timedelta(days=14*365.25)):
+    @model_validator(mode='after')
+    def validate_dates(self):  
+        if self.born_date >= (datetime.now() - timedelta(days=14*365.25)):
             raise ValueError("User must be at least 14 years old")
-        return value
+        return self
     
-    @model_validator(model="user")
-    def validate_rol(cls, value):
-        if value.get('rol') not in ["user","admin"]:
-            raise ValueError("Invalid role")
-        return value
+    @model_validator(mode='after')
+    def validate_rol(self):
+        if self.rol not in ["user","admin"]:
+            raise ValueError("Invalid rol")
+        return self
     
 class UserLogin (BaseModel):
     email: EmailStr = Field(min_length=6, max_length=64, alias="username", title="Email of the user")
