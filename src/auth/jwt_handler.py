@@ -13,6 +13,25 @@ class JWTHandler:
         self.secret = secret
         self.algorithm = algorithm
         
+    def verify_admin(self,credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+        token = credentials.credentials
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+        try:
+            payload = jwt.decode(token, self.secret, algorithms=[self.algorithm])
+            rol: str = payload.get("user.rol")
+            if rol is None:
+                raise credentials_exception
+            if rol != "admin":
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        except jwt.InvalidSignatureError:
+            raise credentials_exception
+        return token
+            
 
     def hash_password(self, password: str) -> str:
         return bcrypt.hashpw(password=password.encode("utf-8"),
@@ -59,26 +78,6 @@ class JWTHandler:
             raise HTTPException(status_code=401, detail="Token expired")
         except jwt.InvalidTokenError:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
-    def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
-        token = credentials.credentials
-        credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-        
-        try:
-            payload = jwt.decode(token, JWTHandler().secret, algorithms=[JWTHandler().algorithm])
-            rol: str = payload.get("user.rol")
-            if rol is None:
-                raise credentials_exception
-            if rol != "admin":
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-        except jwt.InvalidSignatureError:
-            raise credentials_exception
-
-        return token
         
     def encode_refresh_token(self, user):
         payload = {

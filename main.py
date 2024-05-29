@@ -45,7 +45,7 @@ tags_metadata = [
         "description": "parches handling endpoints"
     },
     {
-        "name": "quialifications",
+        "name": "qualifications",
         "description": "Qualifications handling endpoints",
     },
     {

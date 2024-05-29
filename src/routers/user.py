@@ -1,46 +1,39 @@
-import jwt
-from fastapi import APIRouter, Body, Query, Path, status, Depends,HTTPException
+from fastapi import APIRouter, Body, Query, Path, status, Depends
 from fastapi.responses import JSONResponse
 from typing import List, Annotated
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import HTTPAuthorizationCredentials,HTTPBearer
+from fastapi.security import HTTPAuthorizationCredentials
 from src.auth import auth_handler
 from src.auth.has_access import security
 from src.config.database import SessionLocal
 from src.schemas.user import User
 from src.repositories.user import UserRepository
+from src.repositories.city import CityRepository
 
 user_router = APIRouter()
-
-def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
-    token = credentials.credentials
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        payload = jwt.decode(token, auth_handler.secret, algorithms=[auth_handler.algorithm])
-        rol: str = payload.get("user.rol")
-        if rol is None:
-            raise credentials_exception
-        if rol != "admin":
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-    except jwt.InvalidSignatureError:
-        raise credentials_exception
-    return token
 
 @user_router.get("/",tags=['users'],response_model=List[User],description="Returns all users")
 def get_all_users(
         credentials: Annotated[HTTPAuthorizationCredentials, 
                     Depends(security)],
-        _: Annotated[None, Depends(verify_admin)], 
+        _: Annotated[None, Depends(auth_handler.verify_admin)], 
         offset: int = Query(default=None, min=0),
         limit: int = Query(default=None, min=1),
         ) -> List[User]:
     db = SessionLocal()
     result = UserRepository(db).get_all_users(offset,limit)
+    return JSONResponse(content=jsonable_encoder(result),
+    status_code=status.HTTP_200_OK)
+    
+@user_router.get('/city/{idCity}',tags=['users'],response_model=List[User],description="Returns data of user in specific city")
+def get_users_city(credentials: Annotated[HTTPAuthorizationCredentials, 
+                    Depends(security)],
+        _: Annotated[None, Depends(auth_handler.verify_admin)], 
+        offset: int = Query(default=None, min=0),
+        limit: int = Query(default=None, min=1),
+        idCity: int = Path(ge=1, le=5000)) -> List[User]:
+    db = SessionLocal()
+    result = UserRepository(db).get_users_city(offset, limit, idCity)
     return JSONResponse(content=jsonable_encoder(result),
     status_code=status.HTTP_200_OK)
     
@@ -67,7 +60,7 @@ def get_my_user(credentials: Annotated[HTTPAuthorizationCredentials,
 @user_router.get('/{email}',tags=['users'],response_model=User,description="Returns data of one specific user")
 def get_user(credentials: Annotated[HTTPAuthorizationCredentials, 
                     Depends(security)],
-        _: Annotated[None, Depends(verify_admin)], 
+        _: Annotated[None, Depends(auth_handler.verify_admin)], 
         email: str = Path()) -> User:
     print("falla")
     db = SessionLocal()
@@ -90,6 +83,8 @@ def update_my_user(credentials: Annotated[HTTPAuthorizationCredentials,
         issue = payload.get("user.id")
     db = SessionLocal()
     element = UserRepository(db).update_user(issue, user)
+    if not CityRepository(db).get_city(user.city_id):
+        raise Exception("city doesn't exist")
     if not element:
         return JSONResponse(content={
             "message": "The requested user was not found",
@@ -103,11 +98,13 @@ def update_my_user(credentials: Annotated[HTTPAuthorizationCredentials,
 @user_router.put('/{id}',tags=['users'],response_model=dict,description="Updates the data of specific user")
 def update_user(credentials: Annotated[HTTPAuthorizationCredentials, 
                     Depends(security)],
-        _: Annotated[None, Depends(verify_admin)], 
+        _: Annotated[None, Depends(auth_handler.verify_admin)], 
         id: int = Path(ge=1),
         user: User = Body()) -> dict:
     db = SessionLocal()
     element = UserRepository(db).update_user(id, user)
+    if not CityRepository(db).get_city(user.city_id):
+        raise Exception("city doesn't exist")
     if not element:
         return JSONResponse(content={
             "message": "The requested user was not found",
@@ -119,8 +116,8 @@ def update_user(credentials: Annotated[HTTPAuthorizationCredentials,
     }, status_code=status.HTTP_200_OK)
 
 
-@user_router.delete('/myuser',tags=['users'],response_model=dict,description="Removes my user")
-def remove_user(credentials: Annotated[HTTPAuthorizationCredentials, 
+@user_router.delete('/myUser',tags=['users'],response_model=dict,description="Removes my user")
+def remove_my_user(credentials: Annotated[HTTPAuthorizationCredentials, 
                     Depends(security)]) -> dict:
     token = credentials.credentials
     payload = auth_handler.decode_token(token=token)
@@ -139,7 +136,10 @@ def remove_user(credentials: Annotated[HTTPAuthorizationCredentials,
     }, status_code=status.HTTP_200_OK)
     
 @user_router.delete('/{id}',tags=['users'],response_model=dict,description="Removes specific user")
-def remove_user(id: int = Path(ge=1)) -> dict:
+def remove_user(credentials: Annotated[HTTPAuthorizationCredentials, 
+                    Depends(security)],
+        _: Annotated[None, Depends(auth_handler.verify_admin)],
+        id: int = Path(ge=1)) -> dict:
     db = SessionLocal()
     element = UserRepository(db).delete_user(id)
     if not element:

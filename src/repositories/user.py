@@ -1,4 +1,7 @@
+import jwt
 from typing import List
+from fastapi import Depends,status,HTTPException
+from fastapi.security import HTTPAuthorizationCredentials,HTTPBearer
 from src.models.user import User as UserModel
 from src.schemas.user import User as UserSchema
 
@@ -17,9 +20,26 @@ class UserRepository():
         if(limit is not None):
             query = query.limit(limit)
         return query.all()
+    
+    def get_users_city(self,
+        offset: int, 
+        limit: int,
+        idCity
+        ) -> List[UserModel]:
+        
+        query = self.db.query(UserModel).filter(UserModel.city_id == idCity)
+        if(offset is not None):
+            query = query.offset(offset)
+        if(limit is not None):
+            query = query.limit(limit)
+        return query.all()
 
     def get_user(self, email: str) -> UserSchema:
         element = self.db.query(UserModel).filter(UserModel.email == email).first()
+        return element
+
+    def get_user_id(self, id: int) -> UserSchema:
+        element = self.db.query(UserModel).filter(UserModel.id == id).first()
         return element
     
 
