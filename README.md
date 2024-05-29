@@ -8,7 +8,13 @@ Desarrollo de un proyecto de backend completo elaborado en fastapi como framewor
 consiste en una api que almacenara informacion sobre los lugares,reuniones o llamados urbanamente como parches donde se manejaran ususarios, parches, categorias, comentarios calificacion desarrollarlo de forma escalable para que aplique en varias ciudades.
 
 Diagrama de Clases para la estructura del API:
+
 ![Diagrama sin título drawio](https://github.com/yefervalencia/social_city/assets/123003082/df5b3edf-d7ea-40c4-b4e4-52ca9654a0a0)
+
+
+Endpoints utilizados en el proyecto:
+
+![image](https://github.com/yefervalencia/social_city/assets/123003082/30f84f55-9fe7-4d32-85db-e1ac9734e5a4)
 
 
 ## Requisitos
