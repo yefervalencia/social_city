@@ -57,8 +57,10 @@ Para ejecutar la aplicación en modo desarrollo, usa:
 
 ```sh
 uvicorn main:app --reload
+```
 
-La aplicación estará disponible en http://127.0.0.1:8000.
+La aplicación estará disponible en http://127.0.0.1:8000
+La documentacion estara disponible en http://127.0.0.1:8000/docs
 
 
 Este archivo README incluye una descripción general del proyecto, los requisitos, las instrucciones de instalación y ejecución, una descripción detallada de cada endpoint disponible en la API, la estructura del proyecto y la información sobre la licencia del proyecto. Puedes ajustarlo según las necesidades específicas de tu proyecto.
