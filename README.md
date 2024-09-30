@@ -21,7 +21,7 @@ Endpoints utilizados en el proyecto:
 
 - Python 3.10+
 - FastAPI
-- SQLAlchemy
+- SQLite
 - Uvicorn
 - Pydantic
 
@@ -44,12 +44,23 @@ Endpoints utilizados en el proyecto:
     pip install -r requirements.txt
     ```
 
-4. Configura la base de datos en el archivo `src/config/database.py` con tus propias credenciales.
+##Configuracion
 
-5. Realiza las migraciones de la base de datos (si estás usando Alembic):
-    ```sh
-    alembic upgrade head
-    ```
+1. Crea y configura la base de datos
+   -Accede a mysql como admin
+       ```sh
+       mysql
+       ```
+   -Crea la base de datos y ususario
+       ```sh
+       mysql> CREATE DATABASE demo_api;
+       mysql> CREATE USER demo_user@'%' IDENTIFIED BY 'hola123';
+       mysql> GRANT ALL PRIVILEGES ON demo_api.* TO demo_user@'%';
+       mysql> FLUSH PRIVILEGES;
+       mysql> exit;
+       ```
+
+2. Crea y configura tu propio archivo `.env`(variables de entorno) teniendo en cuenta el `.env-example` con tus propias credenciales
 
 ## Ejecución
 
