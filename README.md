@@ -44,7 +44,7 @@ Endpoints utilizados en el proyecto:
     pip install -r requirements.txt
     ```
 
-##Configuracion
+## Configuracion
 
 1. Crea y configura la base de datos
    -Accede a mysql como admin
