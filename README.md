@@ -48,17 +48,17 @@ Endpoints utilizados en el proyecto:
 
 1. Crea y configura la base de datos
    -Accede a mysql como admin
-       ```sh
-       mysql
-       ```
+    ```sh
+    mysql
+     ```
    -Crea la base de datos y ususario
-       ```sh
-       mysql> CREATE DATABASE demo_api;
-       mysql> CREATE USER demo_user@'%' IDENTIFIED BY 'hola123';
-       mysql> GRANT ALL PRIVILEGES ON demo_api.* TO demo_user@'%';
-       mysql> FLUSH PRIVILEGES;
-       mysql> exit;
-       ```
+   ```sh
+   mysql> CREATE DATABASE demo_api;
+   mysql> CREATE USER demo_user@'%' IDENTIFIED BY 'hola123';
+   mysql> GRANT ALL PRIVILEGES ON demo_api.* TO demo_user@'%';
+   mysql> FLUSH PRIVILEGES;
+   mysql> exit;
+   ```
 
 2. Crea y configura tu propio archivo `.env`(variables de entorno) teniendo en cuenta el `.env-example` con tus propias credenciales
 
