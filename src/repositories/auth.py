@@ -46,7 +46,6 @@ class AuthRepository:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="The user is not allowed to log in",
             )
-
         if not auth_handler.verify_password(user.password, check_user.password):
             return HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

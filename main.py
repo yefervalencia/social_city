@@ -10,14 +10,6 @@ from src.routers.qualification import qualification_router
 from src.routers.scenery import scenery_router
 from src.routers.user import user_router
 
-from src.models.category import Category
-from src.models.city import City
-from src.models.comment import Comment
-from src.models.parche import Parche
-from src.models.qualification import Qualification
-from src.models.scenery import Scenery
-from src.models.user import User
-
 tags_metadata = [
     {
         "name": "users",
@@ -61,7 +53,7 @@ app.summary = "API REST para gestión de parches en cada ciudad de Colombia util
 app.description = "This is a demonstration of API REST using Python"
 app.version = "0.0.1"
 app.contact = {
- "names": "Fabian Hernandez Castano, yeferson valencia aristizabal",
+ "names": " yeferson valencia aristizabal",
  "url": "https://github.com/yefervalencia",
  "emails": "fabian.hernandezc@autonoma.edu.co, yeferson.valenciaa@autonoma.edu.co",
 } 

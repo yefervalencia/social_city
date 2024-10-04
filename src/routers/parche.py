@@ -101,10 +101,10 @@ def create_parche(credentials: Annotated[HTTPAuthorizationCredentials,
     db = SessionLocal()
     if not UserRepository(db).get_user_id(parche.user_id):
         raise Exception("user doesn't exist")
-    if not SceneryRepository(db).get_scenery(parche.parche_id):
-        raise Exception("parche doesn't exist")
-    if not CategoryRepository(db).get_category(parche.parche_id):
-        raise Exception("parche doesn't exist")
+    if not SceneryRepository(db).get_scenery(parche.scenery_id):
+        raise Exception("scenery doesn't exist")
+    if not CategoryRepository(db).get_category(parche.category_id):
+        raise Exception("scenery doesn't exist")
     new_parche = ParcheRepository(db).create_parche(parche)
     return JSONResponse(content={
         "message": "The parche was successfully created",
