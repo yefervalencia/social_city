@@ -6,7 +6,7 @@ class SceneryRepository():
     def __init__(self, db) -> None:
         self.db = db
         
-    def get_all_Sceneries(self,
+    def get_all_sceneries(self,
         offset: int, 
         limit: int
         ) -> List[SceneryModel]:

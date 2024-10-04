@@ -27,15 +27,15 @@ class Parche(BaseModel):
       }
     }
   
-  @model_validator(mode='after')
-  def validate_dates(self):
-    start_time = self.start_time
-    end_time = self.end_time
+  # @model_validator(mode='after')
+  # def validate_dates(self):
+  #   start_time = self.start_time
+  #   end_time = self.end_time
     
-    if start_time <= datetime.now():
-        raise ValueError("Start time must be greater than the current time")
+  #   if start_time >= datetime.now():
+  #       raise ValueError("Start time must be greater than the current time")
     
-    if end_time < start_time:
-        raise ValueError("End time must be greater than the start time")
+  #   if end_time >= start_time:
+  #       raise ValueError("End time must be greater than the start time")
     
-    return self
+  #   return self
