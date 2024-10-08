@@ -14,9 +14,9 @@ city_router = APIRouter()
 
 @city_router.get("/",tags=['cities'],response_model=List[City],description="Returns all cities")
 def get_all_cities(
-        credentials: Annotated[HTTPAuthorizationCredentials, 
-                    Depends(security)],
-        _: Annotated[None, Depends(auth_handler.verify_admin)], 
+        ##credentials: Annotated[HTTPAuthorizationCredentials, 
+        ##           Depends(security)],
+        ##_: Annotated[None, Depends(auth_handler.verify_admin)], 
         offset: int = Query(default=None, min=0),
         limit: int = Query(default=None, min=1)
         ) -> List[City]:
@@ -26,8 +26,8 @@ def get_all_cities(
     status_code=status.HTTP_200_OK)
     
 @city_router.get('/myCity',tags=['cities'],response_model=City,description="Returns data of one specific city")
-def get_my_city(credentials: Annotated[HTTPAuthorizationCredentials, 
-                    Depends(security)]) -> City:
+def get_my_city(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]
+                ) -> City:
     token = credentials.credentials
     payload = auth_handler.decode_token(token=token)
     if payload:

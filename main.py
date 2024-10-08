@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from src.config.database import Base, engine
 from src.middlewares.error_handler import ErrorHandler
+from fastapi.middleware.cors import CORSMiddleware 
 from src.routers.auth import auth_router
 from src.routers.category import category_router
 from src.routers.city import city_router
@@ -61,6 +62,21 @@ app.contact = {
 Base.metadata.create_all(bind=engine)
 
 app.add_middleware(ErrorHandler)
+
+# Configurar CORS
+origins = [
+    "http://localhost",  # URL de tu frontend local
+    "http://localhost:3000",  # Otra URL común para el frontend
+    "http://127.0.0.1:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Permitir orígenes específicos
+    allow_credentials=True,  # Permitir uso de cookies
+    allow_methods=["*"],  # Permitir todos los métodos HTTP
+    allow_headers=["*"],  # Permitir todos los headers
+)
 
 app.include_router(prefix="", router=auth_router)
 app.include_router(prefix="/users", router=user_router)
